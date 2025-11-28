@@ -27,7 +27,7 @@ namespace EventSystemAPI.Models
 
         public string Status { get; set; } = "Published";
 
-        // Mối quan hệ: 1 Event có nhiều vé và nhiều người đăng ký
+        // Mối quan hệ:1 Event có nhiều vé và nhiều người đăng ký
         public ICollection<Ticket> Tickets { get; set; }
         public ICollection<Registration> Registrations { get; set; }
     }
