@@ -15,13 +15,8 @@ namespace EventSystemAPI.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            // Bắt đầu bấm giờ
             var sw = Stopwatch.StartNew();
-            
-            // Cho request đi tiếp xử lý
             await _next(context);
-            
-            // Dừng đồng hồ
             sw.Stop();
             
             // Ghi log: Method, Đường dẫn, Mã trạng thái (200/404...), Thời gian xử lý

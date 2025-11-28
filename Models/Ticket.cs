@@ -15,15 +15,15 @@ namespace EventSystemAPI.Models
 
         [Required] 
         [StringLength(50)] 
-        public string TypeName { get; set; } // Ví dụ: VIP, Standard
+        public string TypeName { get; set; } 
 
         [Required] 
         [Range(0, double.MaxValue)] 
-        [Column(TypeName = "decimal(18,2)")] // Định dạng tiền tệ chuẩn SQL (18 số, 2 số thập phân)
+        [Column(TypeName = "decimal(18,2)")] 
         public decimal Price { get; set; }
 
         [Required] 
         [Range(1, int.MaxValue)] 
-        public int Quantity { get; set; } // Số lượng vé bán ra cho loại này
+        public int Quantity { get; set; } 
     }
 }

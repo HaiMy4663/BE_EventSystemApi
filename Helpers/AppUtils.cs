@@ -5,7 +5,7 @@ namespace EventSystemAPI.Helpers
         // Hàm mã hóa mật khẩu (Dùng khi Đăng ký)
         public static string HashPassword(string password) 
         {
-            // BCrypt sẽ tự sinh ra "muối" (salt) ngẫu nhiên, rất an toàn
+            // BCrypt sẽ tự sinh ra  ngẫu nhiên, rất an toàn
             return BCrypt.Net.BCrypt.HashPassword(password);
         }
 

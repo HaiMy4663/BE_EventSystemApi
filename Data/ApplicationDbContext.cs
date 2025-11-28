@@ -7,7 +7,6 @@ namespace EventSystemAPI.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        // Khai báo các bảng sẽ tạo trong SQL Server
         public DbSet<User> Users { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
@@ -16,22 +15,40 @@ namespace EventSystemAPI.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            // [RÀNG BUỘC] Email là duy nhất, không ai được trùng
             modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
 
-            // [LOGIC NGHIỆP VỤ] Chống Spam: 
-            // Tạo khóa phức hợp (UserId + EventId).
-            // Nghĩa là 1 User chỉ được xuất hiện 1 lần trong danh sách đăng ký của 1 Event.
             modelBuilder.Entity<Registration>()
                 .HasIndex(r => new { r.UserId, r.EventId }).IsUnique();
 
-            // [TỰ ĐỘNG] Nếu xóa Event -> Xóa luôn các Ticket của Event đó
             modelBuilder.Entity<Event>()
                 .HasMany(e => e.Tickets)
                 .WithOne(t => t.Event)
                 .HasForeignKey(t => t.EventId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Registration>()
+                .HasOne(r => r.Ticket)
+                .WithMany()
+                .HasForeignKey(r => r.TicketId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Registration>()
+                .HasOne(r => r.User)
+                .WithMany(u => u.Registrations)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    Id = 1,
+                    FullName = "System Administrator",
+                    Email = "admin@system.com",
+                    // Mật khẩu là "M77830311" đã được mã hóa
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("M77830311"),
+                    Role = "Admin"
+                }
+            );
         }
     }
 }

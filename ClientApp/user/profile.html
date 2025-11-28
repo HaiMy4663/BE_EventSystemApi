@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>Vé Của Tôi</title>
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" />
+    <link href="assets/css/styles.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">EVENT SYSTEM</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Trang Chủ</a></li>
+                    <li class="nav-item"><button class="btn btn-primary btn-sm ms-3 text-uppercase" onclick="logout()">Đăng Xuất</button></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-section">
+        <div class="container mt-5">
+            <div class="text-center">
+                <h2 class="section-heading text-uppercase">Vé Của Tôi</h2>
+                <h3 class="section-subheading text-muted">Danh sách các sự kiện bạn đã đăng ký tham gia.</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover bg-white shadow">
+                    <thead class="bg-primary text-white text-uppercase">
+                        <tr>
+                            <th>Sự Kiện</th>
+                            <th>Loại Vé</th>
+                            <th>Giá</th>
+                            <th>Ngày Mua</th>
+                            <th>Trạng Thái</th>
+                            <th>Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table">
+                        <tr><td colspan="6" class="text-center py-3">Đang tải dữ liệu...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <script src="../config.js"></script>
+    <script>
+        // Hàm Toast
+        function showToast(icon, message, timer = 2500) {
+            Swal.fire({ toast: true, position: 'top-end', icon: icon, title: message, showConfirmButton: false, timer: timer, timerProgressBar: true });
+        }
+        
+        const token = localStorage.getItem('token');
+        if(!token) window.location.href = "login.html";
+
+        document.addEventListener("DOMContentLoaded", loadHistory);
+
+        // --- LOGIC TẢI LỊCH SỬ (QUAN TRỌNG) ---
+        async function loadHistory() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/users/history`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if(res.status === 401) { 
+                    logout(); 
+                    return; 
+                }
+
+                const data = await res.json();
+                const tbody = document.getElementById('history-table');
+                tbody.innerHTML = "";
+
+                if(data.length === 0) {
+                    tbody.innerHTML = "<tr><td colspan='6' class='text-center py-3 text-muted'>Bạn chưa mua vé nào.</td></tr>";
+                    return;
+                }
+
+                data.forEach(item => {
+                    const price = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.ticketPrice);
+                    const date = new Date(item.registeredAt).toLocaleString('vi-VN');
+                    
+                    let statusBadge = `<span class="badge bg-success">Thành công</span>`;
+                    let actionBtn = `<span class="badge bg-secondary">Không thể hủy</span>`;
+                    
+                    if (item.status !== 'Active') {
+                        statusBadge = `<span class="badge bg-secondary">Đã hủy</span>`;
+                        actionBtn = `-`;
+                    } else if (item.canCancel) {
+                        // Chỉ hiện nút hủy nếu còn hạn và trạng thái Active
+                        actionBtn = `<button class="btn btn-outline-danger btn-sm text-uppercase" onclick="cancelTicket(${item.registrationId})">Hủy Vé</button>`;
+                    }
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="fw-bold">${item.eventName} <br> <small class="text-muted">${item.location}</small></td>
+                            <td><span class="badge bg-info text-dark">${item.ticketType}</span></td>
+                            <td>${price}</td>
+                            <td>${date}</td>
+                            <td>${statusBadge}</td>
+                            <td>${actionBtn}</td>
+                        </tr>
+                    `;
+                });
+            } catch(err) { 
+                console.error(err);
+                document.getElementById('history-table').innerHTML = "<tr><td colspan='6' class='text-center text-danger'>Lỗi tải dữ liệu.</td></tr>";
+            }
+        }
+
+        // --- LOGIC HỦY VÉ ---
+        async function cancelTicket(id) {
+            const confirmResult = await Swal.fire({
+                title: 'Xác nhận Hủy Vé?',
+                text: "Thao tác này không thể hoàn tác. Vé sẽ bị hủy bỏ.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                confirmButtonText: 'Đồng ý Hủy!',
+                cancelButtonText: 'Giữ lại'
+            });
+
+            if (!confirmResult.isConfirmed) return;
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/users/registrations/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    showToast('success', data.message || 'Vé của bạn đã được hủy.');
+                    loadHistory(); 
+                } else {
+                    Swal.fire('Thao tác bị chặn', data.message || 'Lỗi hệ thống khi hủy vé', 'warning');
+                }
+            } catch (e) {
+                Swal.fire('Lỗi kết nối', 'Không thể kết nối đến server.', 'error');
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

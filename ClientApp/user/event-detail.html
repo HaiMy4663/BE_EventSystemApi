@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>Chi Tiết Sự Kiện</title>
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" />
+    <link href="assets/css/styles.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body id="page-top" class="bg-light">
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">EVENT SYSTEM</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Trang Chủ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="profile.html">Vé Của Tôi</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-section">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h2 class="text-uppercase mb-3" id="eName">Đang tải...</h2>
+                    <p class="text-muted mb-4"><i class="fas fa-map-marker-alt me-2"></i> <span id="eLoc">...</span></p>
+                    
+                    <img class="img-fluid d-block mx-auto rounded mb-5 shadow-sm w-100" src="assets/assets/img/portfolio/1.jpg" alt="..." style="height: 400px; object-fit: cover;" />
+                    
+                    <h4>Thông Tin Sự Kiện</h4>
+                    <p id="eDesc" class="text-justify">...</p>
+                    <hr>
+                    <div class="row text-muted">
+                        <div class="col-md-6"><p>📅 Bắt đầu: <span id="eStart" class="fw-bold text-dark"></span></p></div>
+                        <div class="col-md-6"><p>🏁 Kết thúc: <span id="eEnd" class="fw-bold text-dark"></span></p></div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow sticky-top" style="top: 100px;">
+                        <div class="card-header bg-warning text-white text-center">
+                            <h4 class="m-0 text-uppercase fw-bold">CHỌN VÉ NGAY</h4>
+                        </div>
+                        <div class="card-body" id="ticket-container">
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-warning" role="status"></div>
+                                <p class="mt-2">Đang tải danh sách vé...</p>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white text-center text-muted small">
+                            <i class="fas fa-shield-alt"></i> Thanh toán an toàn & bảo mật
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="../config.js"></script>
+    <script>
+        // Hàm Toast
+        function showToast(icon, message) {
+            Swal.fire({ toast: true, position: 'top-end', icon: icon, title: message, showConfirmButton: false, timer: 1500, timerProgressBar: true });
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('id');
+        const token = localStorage.getItem('token');
+
+        // Kiểm tra ID
+        if(eventId) {
+            loadDetail();
+        } else {
+            window.location.href = "index.html";
+        }
+
+        // --- LOGIC TẢI CHI TIẾT ---
+        async function loadDetail() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/events/${eventId}`);
+                if(!res.ok) throw new Error("Không tìm thấy sự kiện");
+                
+                const evt = await res.json();
+
+                // 1. Điền thông tin sự kiện
+                document.getElementById('eName').innerText = evt.name;
+                document.getElementById('eLoc').innerText = evt.location;
+                document.getElementById('eDesc').innerText = evt.description || "Chưa có mô tả chi tiết.";
+                document.getElementById('eStart').innerText = new Date(evt.startDate).toLocaleString('vi-VN');
+                document.getElementById('eEnd').innerText = new Date(evt.endDate).toLocaleString('vi-VN');
+
+                // 2. Vẽ danh sách vé
+                const tContainer = document.getElementById('ticket-container');
+                tContainer.innerHTML = "";
+                
+                if(evt.tickets && evt.tickets.length > 0) {
+                    evt.tickets.forEach(t => {
+                        const price = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(t.price);
+                        
+                        // Kiểm tra hết vé
+                        const isSoldOut = t.availableQuantity <= 0;
+                        const btnClass = isSoldOut ? 'btn-secondary disabled' : 'btn-outline-warning';
+                        const btnText = isSoldOut ? 'HẾT VÉ' : 'MUA NGAY';
+                        const ticketColor = isSoldOut ? 'text-muted' : 'text-dark';
+
+                        tContainer.innerHTML += `
+                            <div class="border rounded p-3 mb-3 ${isSoldOut ? 'bg-light' : ''}">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h5 class="m-0 ${ticketColor} fw-bold">${t.typeName}</h5>
+                                    <span class="fw-bold text-success fs-5">${price}</span>
+                                </div>
+                                <div class="small text-muted mb-3">
+                                    <i class="fas fa-ticket-alt me-1"></i> Còn lại: <strong>${t.availableQuantity}</strong> vé
+                                </div>
+                                <div class="d-grid">
+                                    <button class="btn ${btnClass} fw-bold py-2" onclick="buyTicket(${t.id})">
+                                        ${btnText}
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    tContainer.innerHTML = "<p class='text-center text-muted py-3'>Chưa có vé mở bán cho sự kiện này.</p>";
+                }
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Lỗi', 'Không thể tải thông tin sự kiện.', 'error').then(() => {
+                    window.location.href = "index.html";
+                });
+            }
+        }
+
+        // --- LOGIC MUA VÉ ---
+        async function buyTicket(ticketId) {
+            // 1. Check đăng nhập
+            if(!token) {
+                Swal.fire({
+                    title: 'Cần Đăng Nhập',
+                    text: "Vui lòng đăng nhập để tiếp tục mua vé.",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Đăng Nhập Ngay',
+                    cancelButtonText: 'Để sau'
+                }).then((result) => {
+                    if (result.isConfirmed) window.location.href = "login.html";
+                });
+                return;
+            }
+
+            // 2. Xác nhận mua
+            const confirmResult = await Swal.fire({
+                title: 'Xác nhận mua vé?',
+                text: "Vé đã mua sẽ không thể hoàn tiền.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#ffc107',
+                confirmButtonText: 'Thanh Toán Ngay',
+                cancelButtonText: 'Hủy bỏ'
+            });
+
+            if (!confirmResult.isConfirmed) return;
+
+            // 3. Gọi API
+            try {
+                const res = await fetch(`${API_BASE_URL}/events/register`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ ticketId: ticketId })
+                });
+
+                const data = await res.json();
+                if(res.ok) {
+                    showToast('success', 'Đặt vé thành công!');
+                    setTimeout(() => window.location.href = "profile.html", 1500);
+                } else {
+                    Swal.fire('Thất bại', data.message || "Lỗi không xác định", 'error');
+                }
+            } catch(err) {
+                Swal.fire('Lỗi kết nối', 'Không thể kết nối Server.', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

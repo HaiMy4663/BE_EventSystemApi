@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <title>Admin - Quản Lý Sự Kiện</title>
+
+    <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+</head>
+
+<body id="page-top">
+
+    <div id="wrapper">
+
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard.html">
+                <div class="sidebar-brand-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="sidebar-brand-text mx-3">ADMIN PANEL</div>
+            </a>
+            <hr class="sidebar-divider my-0">
+            <li class="nav-item">
+                <a class="nav-link" href="dashboard.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="events.html">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Quản lý Sự kiện</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="report-users.html">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Báo cáo Người mua</span>
+                </a>
+            </li>
+            <hr class="sidebar-divider d-none d-md-block">
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+        </ul>
+
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <div id="content">
+
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small" id="adminNameDisplay">Admin</span>
+                                <img class="img-profile rounded-circle" src="assets/img/undraw_profile.svg">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>Đăng Xuất
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="container-fluid">
+
+                    <h1 class="h3 mb-2 text-gray-800">QUẢN LÝ SỰ KIỆN</h1>
+                    <p class="mb-4">Danh sách sự kiện, công cụ sửa và xóa.</p>
+                    
+                    <a href="create-event.html" class="btn btn-primary btn-icon-split mb-3">
+                        <span class="icon text-white-50"><i class="fas fa-plus"></i></span>
+                        <span class="text">Thêm Sự Kiện Mới</span>
+                    </a>
+                    
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Danh sách Sự kiện</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tên Sự Kiện</th>
+                                            <th>Ngày BĐ</th>
+                                            <th>Slots</th>
+                                            <th>Trạng Thái</th>
+                                            <th>ACTIONS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="event-list-body"> 
+                                        </tbody>
+                                </table>
+                                
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center" id="pagination-controls"></ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                </div>
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; Event Admin 2025</span>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+        </div>
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Sẵn sàng rời đi?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Chọn "Đăng Xuất" để kết thúc phiên làm việc.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Hủy</button>
+                    <a class="btn btn-primary" href="login.html" onclick="localStorage.removeItem('adminToken')">Đăng Xuất</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/vendor/jquery/jquery.min.js"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="assets/js/sb-admin-2.min.js"></script>
+    
+    <script src="../config.js"></script> 
+    
+    <script>
+        // [HÀM HỖ TRỢ TOAST]
+        function showToast(icon, message, timer = 2500) {
+            Swal.fire({
+                toast: true, position: 'top-end', icon: icon, title: message,
+                showConfirmButton: false, timer: timer, timerProgressBar: true
+            });
+        }
+
+        // [SỰ KIỆN WINDOW.ONLOAD] - Đảm bảo config.js đã load xong
+        window.onload = function() {
+            
+            // Kiểm tra config
+            if (typeof API_BASE_URL === 'undefined') {
+                console.error("Lỗi: API_BASE_URL chưa định nghĩa. Kiểm tra đường dẫn config.js");
+                return;
+            }
+
+            const ADMIN_TOKEN = localStorage.getItem('adminToken');
+            const TABLE_BODY = document.getElementById('event-list-body');
+            const PAGINATION_CONTROLS = document.getElementById('pagination-controls');
+            let currentPage = 1;
+            const PAGE_SIZE = 10;
+
+            // Kiểm tra quyền
+            if (!ADMIN_TOKEN) {
+                window.location.href = 'login.html'; 
+                return;
+            }
+
+            document.getElementById('adminNameDisplay').innerText = localStorage.getItem('adminUser') || "Admin";
+            
+            // Tải dữ liệu lần đầu
+            loadEvents(currentPage);
+            
+            // --- CÁC HÀM LOGIC ---
+
+            async function loadEvents(page = 1) {
+                currentPage = page;
+                TABLE_BODY.innerHTML = '<tr><td colspan="6" class="text-center">Đang tải dữ liệu...</td></tr>';
+                
+                try {
+                    const response = await fetch(`${API_BASE_URL}/admin/events?pageIndex=${page}&pageSize=${PAGE_SIZE}`, {
+                        headers: { 'Authorization': `Bearer ${ADMIN_TOKEN}` }
+                    });
+                    
+                    if (response.status === 403 || response.status === 401) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
+
+                    if (!response.ok) throw new Error("Lỗi kết nối server");
+
+                    const data = await response.json();
+                    const events = data.data || data.Data;
+                    const totalCount = data.totalCount || data.TotalCount;
+                    const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+
+                    renderTable(events);
+                    renderPagination(totalPages);
+                    
+                } catch (error) {
+                    console.error(error);
+                    Swal.fire('Lỗi', 'Không thể tải dữ liệu sự kiện.', 'error');
+                    TABLE_BODY.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Lỗi kết nối API.</td></tr>';
+                }
+            }
+
+            function renderTable(events) {
+                TABLE_BODY.innerHTML = '';
+                if (!events || events.length === 0) {
+                    TABLE_BODY.innerHTML = '<tr><td colspan="6" class="text-center">Không có sự kiện nào. Bấm nút Thêm Mới để bắt đầu.</td></tr>';
+                    return;
+                }
+
+                events.forEach(evt => {
+                    const statusClass = evt.status === 'Published' ? 'bg-success' : evt.status === 'Canceled' ? 'bg-danger' : 'bg-warning';
+                    const totalTickets = evt.tickets ? evt.tickets.reduce((sum, t) => sum + t.availableQuantity, 0) : 0;
+
+                    const row = `
+                        <tr>
+                            <td>${evt.id}</td>
+                            <td>${evt.name}</td>
+                            <td>${new Date(evt.startDate).toLocaleDateString('vi-VN')}</td>
+                            <td>${totalTickets} / ${evt.totalSlots}</td>
+                            <td><span class="badge ${statusClass} text-white">${evt.status}</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-info" onclick="viewRegistrants(${evt.id})" title="Xem Khách"><i class="fas fa-users"></i></button>
+                                <button class="btn btn-sm btn-warning" onclick="editEvent(${evt.id})" title="Sửa"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteEvent(${evt.id})" title="Xóa"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                    TABLE_BODY.innerHTML += row;
+                });
+            }
+
+            function renderPagination(totalPages) {
+                PAGINATION_CONTROLS.innerHTML = '';
+                if (totalPages <= 1) return;
+
+                // Previous
+                PAGINATION_CONTROLS.innerHTML += `
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="loadEvents(${currentPage - 1}); return false;">Previous</a>
+                    </li>
+                `;
+
+                // Numbers
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, currentPage + 2);
+                for (let i = startPage; i <= endPage; i++) {
+                    PAGINATION_CONTROLS.innerHTML += `
+                        <li class="page-item ${i === currentPage ? 'active' : ''}">
+                            <a class="page-link" href="#" onclick="loadEvents(${i}); return false;">${i}</a>
+                        </li>
+                    `;
+                }
+
+                // Next
+                PAGINATION_CONTROLS.innerHTML += `
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="loadEvents(${currentPage + 1}); return false;">Next</a>
+                    </li>
+                `;
+            }
+
+            // GÁN HÀM VÀO WINDOW ĐỂ NÚT BẤM GỌI ĐƯỢC
+            window.loadEvents = loadEvents;
+            window.editEvent = function(id) { window.location.href = `create-event.html?id=${id}`; };
+            window.viewRegistrants = function(id) { window.location.href = `report-users.html?eventId=${id}`; };
+            
+            window.deleteEvent = async function(id) {
+                const result = await Swal.fire({
+                    title: 'Xóa sự kiện?',
+                    text: "Hành động này không thể hoàn tác!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Xóa ngay'
+                });
+
+                if (result.isConfirmed) {
+                    try {
+                        const res = await fetch(`${API_BASE_URL}/admin/events/${id}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `Bearer ${ADMIN_TOKEN}` }
+                        });
+                        if (res.ok) {
+                            showToast('success', 'Đã xóa thành công.');
+                            loadEvents(currentPage);
+                        } else {
+                            Swal.fire('Lỗi', 'Không thể xóa sự kiện này.', 'error');
+                        }
+                    } catch (e) {
+                        Swal.fire('Lỗi kết nối', 'Vui lòng kiểm tra server.', 'error');
+                    }
+                }
+            };
+
+        }; // End window.onload
+    </script>
+</body>
+</html>

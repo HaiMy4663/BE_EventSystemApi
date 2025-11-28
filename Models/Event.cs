@@ -17,12 +17,12 @@ namespace EventSystemAPI.Models
         public DateTime StartDate { get; set; }
 
         [Required] 
-        public DateTime EndDate { get; set; } // Dùng để kiểm tra logic hủy đăng ký
+        public DateTime EndDate { get; set; } 
 
         [Required] 
         public string Location { get; set; }
 
-        [Range(1, int.MaxValue)] // Số lượng phải lớn hơn 0
+        [Range(1, int.MaxValue)] 
         public int TotalSlots { get; set; }
 
         public string Status { get; set; } = "Published";

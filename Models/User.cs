@@ -9,7 +9,7 @@ namespace EventSystemAPI.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Họ tên không được để trống")] 
-        [StringLength(100)] // Giới hạn độ dài để tối ưu DB
+        [StringLength(100)] 
         public string FullName { get; set; }
 
         [Required] 

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <title>Admin - Báo Cáo Người Mua</title>
+
+    <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+
+<body id="page-top">
+
+    <div id="wrapper">
+
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard.html">
+                <div class="sidebar-brand-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="sidebar-brand-text mx-3">ADMIN PANEL</div>
+            </a>
+            <hr class="sidebar-divider my-0">
+            <li class="nav-item">
+                <a class="nav-link" href="dashboard.html"><i class="fas fa-fw fa-tachometer-alt"></i><span>Dashboard</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="events.html"><i class="fas fa-fw fa-table"></i><span>Quản lý Sự kiện</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="report-users.html"><i class="fas fa-fw fa-users"></i><span>Báo cáo Người mua</span></a>
+            </li>
+            <hr class="sidebar-divider d-none d-md-block">
+            <div class="text-center d-none d-md-inline"><button class="rounded-circle border-0" id="sidebarToggle"></button></div>
+        </ul>
+
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3"><i class="fa fa-bars"></i></button>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small" id="adminNameDisplay">Admin</span>
+                                <img class="img-profile rounded-circle" src="assets/img/undraw_profile.svg">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in">
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>Đăng Xuất
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="container-fluid">
+
+                    <h1 class="h3 mb-2 text-gray-800">Báo Cáo Người Mua</h1>
+                    <p class="mb-4">Danh sách chi tiết khách hàng đã đăng ký mua vé cho một sự kiện cụ thể.</p>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6 col-12 mb-2"> <input type="number" id="searchEventId" class="form-control" placeholder="Nhập ID Sự kiện để xem..." min="1">
+                        </div>
+                        <div class="col-md-2 col-12">
+                            <button class="btn btn-primary w-100" onclick="searchReport()">
+                                <i class="fas fa-search"></i> Xem Báo Cáo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary" id="report-title">Kết Quả Tìm Kiếm</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Họ Tên</th>
+                                            <th>Email</th>
+                                            <th>Loại Vé</th>
+                                            <th>Giá Tiền</th>
+                                            <th>Ngày Mua</th>
+                                            <th>Trạng Thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="report-body">
+                                        <tr><td colspan="7" class="text-center text-muted">Vui lòng nhập ID sự kiện để xem báo cáo.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto"><div class="copyright text-center my-auto"><span>Copyright &copy; Event Admin 2025</span></div></div>
+            </footer>
+        </div>
+    </div>
+
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title">Xác nhận đăng xuất?</h5>
+                    <button class="close" type="button" data-dismiss="modal"><span>×</span></button>
+                </div>
+                <div class="modal-body">Chọn "Đăng Xuất" để kết thúc phiên làm việc.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Hủy</button>
+                    <a class="btn btn-primary" href="login.html" onclick="localStorage.removeItem('adminToken')">Đăng Xuất</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/vendor/jquery/jquery.min.js"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="assets/js/sb-admin-2.min.js"></script>
+    <script src="../config.js"></script> 
+    
+    <script>
+        // 1. KHỞI TẠO BIẾN
+        const ADMIN_TOKEN = localStorage.getItem('adminToken');
+        // Lấy tham số ?eventId=... từ URL (nếu được chuyển từ trang List qua)
+        const URL_PARAMS = new URLSearchParams(window.location.search);
+        const EVENT_ID_PARAM = URL_PARAMS.get('eventId');
+
+        // 2. BẢO MẬT: Kiểm tra Token
+        if (!ADMIN_TOKEN) window.location.href = 'login.html';
+
+        // 3. KHI TRANG TẢI XONG
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('adminNameDisplay').innerText = localStorage.getItem('adminUser') || "Admin";
+            
+            // Nếu có ID trên URL -> Tự động tìm kiếm luôn
+            if (EVENT_ID_PARAM) {
+                document.getElementById('searchEventId').value = EVENT_ID_PARAM;
+                loadReport(EVENT_ID_PARAM);
+            }
+        });
+
+        // 4. HÀM XỬ LÝ KHI BẤM NÚT TÌM KIẾM
+        function searchReport() {
+            const id = document.getElementById('searchEventId').value;
+            if (id) {
+                loadReport(id);
+            } else {
+                Swal.fire('Cảnh báo', 'Vui lòng nhập ID sự kiện.', 'warning');
+            }
+        }
+
+        // 5. HÀM GỌI API & VẼ BẢNG
+        async function loadReport(id) {
+            const tbody = document.getElementById('report-body');
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Đang tải dữ liệu...</td></tr>';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/events/${id}/users`, {
+                    headers: { 'Authorization': `Bearer ${ADMIN_TOKEN}` }
+                });
+
+                if (!response.ok) throw new Error("Lỗi tải dữ liệu từ Server");
+
+                const data = await response.json();
+                tbody.innerHTML = ''; // Xóa icon loading
+
+                // Nếu không có dữ liệu
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Chưa có ai mua vé cho sự kiện này.</td></tr>';
+                    document.getElementById('report-title').innerText = `Danh sách khách hàng - Sự kiện ID: ${id}`;
+                    return;
+                }
+
+                // Cập nhật tiêu đề bảng
+                document.getElementById('report-title').innerText = `Danh sách khách hàng - Sự kiện ID: ${id} (${data.length} người)`;
+
+                // Duyệt qua từng dòng dữ liệu và vẽ HTML
+                data.forEach(item => {
+                    const price = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.pricePaid);
+                    const date = new Date(item.registeredAt).toLocaleString('vi-VN');
+                    const statusClass = item.status === 'Active' ? 'badge-success' : 'badge-secondary';
+
+                    const row = `
+                        <tr>
+                            <td>${item.registrationId}</td>
+                            <td>${item.userFullName}</td>
+                            <td>${item.userEmail}</td>
+                            <td><span class="badge badge-info p-2">${item.ticketType}</span></td>
+                            <td>${price}</td>
+                            <td>${date}</td>
+                            <td><span class="badge ${statusClass} p-2">${item.status}</span></td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+
+            } catch (error) {
+                console.error(error);
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Không tìm thấy sự kiện này hoặc lỗi kết nối.</td></tr>';
+            }
+        }
+    </script>
+</body>
+</html>

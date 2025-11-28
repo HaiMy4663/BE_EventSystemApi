@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Đăng Ký - Event System</title>
+    
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" />
+    
+    <link href="assets/css/styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body { 
+            background-color: #212529; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            padding: 20px 0;
+        }
+        .register-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 15px;
+        }
+        .card {
+            border: none;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        .card-header {
+            background-color: #ffc800;
+            color: #212529;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .btn-primary {
+            background-color: #ffc800;
+            border-color: #ffc800;
+            color: #212529;
+            font-weight: 700;
+        }
+        .btn-primary:hover {
+            background-color: #d9aa00;
+            border-color: #d9aa00;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-shrink" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">EVENT SYSTEM</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Trang Chủ</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="register-container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center py-4">
+                <h3>Tạo Tài Khoản</h3>
+            </div>
+            <div class="card-body p-4">
+                <form id="registerForm" onsubmit="return false;">
+                    
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="fullName" type="text" placeholder="Nguyen Van A" required />
+                        <label for="fullName">Họ và Tên</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="email" type="email" placeholder="name@example.com" required />
+                        <label for="email">Địa chỉ Email</label>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="password" type="password" placeholder="Password" required />
+                        <label for="password">Mật khẩu</label>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button class="btn btn-primary btn-xl text-uppercase" type="submit" id="btnRegister">
+                            Đăng Ký Ngay
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="card-footer text-center py-3 bg-white">
+                <div class="small"><a href="login.html" class="text-decoration-none text-muted">Đã có tài khoản? <span class="text-primary fw-bold">Đăng nhập</span></a></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../config.js"></script>
+    <script>
+        // 1. HÀM TIỆN ÍCH
+        function showToast(icon, message) {
+            Swal.fire({
+                toast: true, position: 'top-end', icon: icon, title: message,
+                showConfirmButton: false, timer: 1500, timerProgressBar: true
+            });
+        }
+
+        // 2. XỬ LÝ SỰ KIỆN
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            handleRegister();
+        });
+
+        // 3. LOGIC ĐĂNG KÝ
+        async function handleRegister() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const btn = document.getElementById('btnRegister');
+
+            // Loading State
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tạo...';
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullName, email, password })
+                });
+
+                if (res.ok) {
+                    showToast('success', 'Đăng ký thành công! Đang chuyển hướng...');
+                    setTimeout(() => window.location.href = 'login.html', 1500); 
+                } else {
+                    const err = await res.json();
+                    let errMsg = err.message || 'Đăng ký thất bại.';
+                    // Nếu backend trả về mảng lỗi (Validation)
+                    if(err.errors) errMsg = Object.values(err.errors).flat().join('\n');
+                    
+                    Swal.fire({ icon: 'error', title: 'Thất bại', text: errMsg, confirmButtonColor: '#ffc800' });
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire({ icon: 'error', title: 'Lỗi kết nối', text: 'Không thể kết nối Server.', confirmButtonColor: '#d33' });
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Đăng Ký Ngay';
+            }
+        }
+    </script>
+</body>
+</html>

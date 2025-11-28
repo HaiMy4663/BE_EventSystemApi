@@ -18,13 +18,11 @@ namespace EventSystemAPI.Middleware
         {
             try 
             { 
-                // Cho request đi tiếp
                 await _next(context); 
             }
             catch (Exception ex) 
             { 
                 // Nếu có lỗi xảy ra ở bất cứ đâu...
-                
                 // 1. Ghi log lỗi thật vào console để Dev sửa
                 _logger.LogError(ex, "Lỗi hệ thống nghiêm trọng");
 

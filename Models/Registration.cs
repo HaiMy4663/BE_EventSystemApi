@@ -16,12 +16,12 @@ namespace EventSystemAPI.Models
         public int EventId { get; set; }
         public Event Event { get; set; }
 
-        // [QUAN TRỌNG] Lưu vé ID để biết user mua loại vé nào
+        // Lưu vé ID để biết user mua loại vé nào
         [ForeignKey("Ticket")] 
         public int TicketId { get; set; }
         public Ticket Ticket { get; set; }
 
         public DateTime RegisteredAt { get; set; } = DateTime.Now;
-        public string Status { get; set; } = "Active"; // Active (Đã mua), Canceled (Đã hủy)
+        public string Status { get; set; } = "Active";
     }
 }

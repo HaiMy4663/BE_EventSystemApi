@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <title>Admin - Tạo/Sửa Sự Kiện</title>
+
+    <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+
+<body id="page-top">
+
+    <div id="wrapper">
+
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard.html">
+                <div class="sidebar-brand-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="sidebar-brand-text mx-3">ADMIN PANEL</div>
+            </a>
+            <hr class="sidebar-divider my-0">
+            <li class="nav-item"><a class="nav-link" href="dashboard.html"><i class="fas fa-fw fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+            <li class="nav-item active"><a class="nav-link" href="events.html"><i class="fas fa-fw fa-table"></i><span>Quản lý Sự kiện</span></a></li>
+            <li class="nav-item"><a class="nav-link" href="report-users.html"><i class="fas fa-fw fa-users"></i><span>Báo cáo Người mua</span></a></li>
+            <hr class="sidebar-divider d-none d-md-block">
+            <div class="text-center d-none d-md-inline"><button class="rounded-circle border-0" id="sidebarToggle"></button></div>
+        </ul>
+
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3"><i class="fa fa-bars"></i></button>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small" id="adminNameDisplay">Admin</span>
+                                <img class="img-profile rounded-circle" src="assets/img/undraw_profile.svg">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in">
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>Đăng Xuất
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="container-fluid">
+                    <h1 class="h3 mb-4 text-gray-800" id="page-title">Tạo Sự Kiện Mới</h1>
+
+                    <div class="row">
+                        <div class="col-lg-10 col-12">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Thông Tin Chi Tiết</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form id="event-form">
+                                        
+                                        <div class="form-group">
+                                            <label class="font-weight-bold">Tên Sự Kiện <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="name" required placeholder="Nhập tên sự kiện...">
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6 col-12">
+                                                <label class="font-weight-bold">Ngày Bắt Đầu <span class="text-danger">*</span></label>
+                                                <input type="datetime-local" class="form-control" id="startDate" required>
+                                            </div>
+                                            <div class="form-group col-md-6 col-12">
+                                                <label class="font-weight-bold">Ngày Kết Thúc <span class="text-danger">*</span></label>
+                                                <input type="datetime-local" class="form-control" id="endDate" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="font-weight-bold">Địa Điểm <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="location" required placeholder="Nhập địa điểm tổ chức...">
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6 col-12">
+                                                <label class="font-weight-bold">Tổng Sức Chứa <span class="text-danger">*</span></label>
+                                                <input type="number" class="form-control" id="totalSlots" min="1" required>
+                                            </div>
+                                            <div class="form-group col-md-6 col-12" id="status-group">
+                                                <label class="font-weight-bold">Trạng Thái</label>
+                                                <select class="form-control" id="status">
+                                                    <option value="Published">Published (Công khai)</option>
+                                                    <option value="Canceled">Canceled (Đã hủy)</option>
+                                                    <option value="Completed">Completed (Đã xong)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="font-weight-bold">Mô Tả</label>
+                                            <textarea class="form-control" id="description" rows="3"></textarea>
+                                        </div>
+
+                                        <hr>
+                                        <h6 class="m-0 font-weight-bold text-primary mb-3">Cấu Hình Vé</h6>
+                                        
+                                        <div id="tickets-container"></div>
+                                        
+                                        <button type="button" id="btn-add-ticket" class="btn btn-success btn-sm mb-3" onclick="addTicketRow()">
+                                            <i class="fas fa-plus"></i> Thêm Loại Vé
+                                        </button>
+
+                                        <hr>
+                                        <div class="d-flex justify-content-end">
+                                            <a href="events.html" class="btn btn-secondary btn-lg mr-2">Hủy Bỏ</a>
+                                            <button type="submit" class="btn btn-primary btn-lg" id="submit-button">Lưu Lại</button>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto"><div class="copyright text-center my-auto"><span>Copyright &copy; Event Admin 2025</span></div></div>
+            </footer>
+        </div>
+    </div>
+
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header"><h5 class="modal-title">Đăng Xuất?</h5>
+                    <button class="close" type="button" data-dismiss="modal"><span>×</span></button>
+                </div>
+                <div class="modal-body">Chọn "Đăng Xuất" để kết thúc phiên làm việc.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Hủy</button>
+                    <a class="btn btn-primary" href="login.html" onclick="localStorage.removeItem('adminToken')">Đăng Xuất</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/vendor/jquery/jquery.min.js"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="assets/js/sb-admin-2.min.js"></script>
+    <script src="../config.js"></script> 
+    
+    <script>
+        const ADMIN_TOKEN = localStorage.getItem('adminToken');
+        const URL_PARAMS = new URLSearchParams(window.location.search);
+        const EDIT_EVENT_ID = URL_PARAMS.get('id');
+
+        if (!ADMIN_TOKEN) { window.location.href = 'login.html'; }
+
+        function showToast(icon, message) {
+            Swal.fire({ toast: true, position: 'top-end', icon: icon, title: message, showConfirmButton: false, timer: 2500, timerProgressBar: true });
+        }
+
+        function formatDateTimeLocal(dateString) {
+            const date = new Date(dateString);
+            const pad = (num) => String(num).padStart(2, '0');
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        }
+
+        // 1. LOGIC GIAO DIỆN VÉ
+        function addTicketRow(data = {}) {
+            const container = document.getElementById('tickets-container');
+            const id = Date.now() + Math.random(); 
+            
+            let deleteButton = `<button type="button" class="btn btn-danger btn-sm w-100" onclick="removeTicketRow('${id}')"><i class="fas fa-trash"></i> Xóa</button>`;
+            
+            if (EDIT_EVENT_ID && data.typeName) { 
+                 deleteButton = `<button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeTicketRow('${id}')" title="Vé cũ"><i class="fas fa-trash"></i> Xóa</button>`;
+                 document.getElementById('btn-add-ticket').style.display = 'none'; // Ẩn thêm vé khi sửa để tránh phức tạp
+            }
+
+            const ticketHtml = `
+                <div class="card bg-light border-left-primary p-3 mb-3 ticket-row shadow-sm" id="ticket-${id}">
+                    <div class="form-row align-items-end">
+                        <div class="col-12 col-md-5 mb-2 mb-md-0">
+                            <label class="small font-weight-bold text-uppercase text-gray-600">Tên Vé <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control t-name" placeholder="VD: VIP" value="${data.typeName || ''}" required>
+                        </div>
+                        <div class="col-6 col-md-3 mb-2 mb-md-0">
+                            <label class="small font-weight-bold text-uppercase text-gray-600">Giá (VNĐ) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control t-price" placeholder="0" value="${data.price || 0}" min="0" required>
+                        </div>
+                        <div class="col-6 col-md-3 mb-2 mb-md-0">
+                            <label class="small font-weight-bold text-uppercase text-gray-600">Số lượng <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control t-qty" placeholder="100" value="${data.quantity || 100}" min="1" required>
+                        </div>
+                        <div class="col-12 col-md-1 mt-2 mt-md-0 text-center">
+                            ${deleteButton}
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', ticketHtml);
+        }
+
+        function removeTicketRow(id) {
+            document.getElementById(`ticket-${id}`).remove();
+        }
+
+        // 2. LOAD DATA
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('adminNameDisplay').innerText = localStorage.getItem('adminUser') || "Admin";
+
+            if (EDIT_EVENT_ID) {
+                document.getElementById('page-title').innerText = "Chỉnh Sửa Sự Kiện";
+                document.getElementById('submit-button').innerText = "Cập Nhật Thay Đổi";
+                loadEventData(EDIT_EVENT_ID);
+            } else {
+                addTicketRow(); 
+                document.getElementById('status-group').style.display = 'none'; 
+            }
+        });
+
+        async function loadEventData(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/events/${id}`, {
+                    headers: { 'Authorization': `Bearer ${ADMIN_TOKEN}` }
+                });
+
+                if (!response.ok) {
+                    Swal.fire('Lỗi', 'Không tìm thấy sự kiện.', 'error');
+                    setTimeout(() => window.location.href = 'events.html', 1500);
+                    return;
+                }
+
+                const eventData = await response.json();
+                
+                document.getElementById('name').value = eventData.name;
+                document.getElementById('location').value = eventData.location;
+                document.getElementById('totalSlots').value = eventData.totalSlots;
+                document.getElementById('description').value = eventData.description || '';
+                document.getElementById('startDate').value = formatDateTimeLocal(eventData.startDate);
+                document.getElementById('endDate').value = formatDateTimeLocal(eventData.endDate);
+                document.getElementById('status').value = eventData.status;
+
+                document.getElementById('tickets-container').innerHTML = ''; 
+                if (eventData.tickets && eventData.tickets.length > 0) {
+                    eventData.tickets.forEach(t => addTicketRow({ typeName: t.typeName, price: t.price, quantity: t.quantity }));
+                } else {
+                    addTicketRow();
+                }
+            } catch (error) {
+                Swal.fire('Lỗi', 'Không thể kết nối Server.', 'error');
+            }
+        }
+
+        // 3. SUBMIT FORM (CÓ VALIDATION TỔNG VÉ)
+        document.getElementById('event-form').addEventListener('submit', handleFormSubmit);
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            const submitButton = document.getElementById('submit-button');
+            
+            try {
+                // 1. Lấy và kiểm tra dữ liệu
+                const eventData = collectFormData(); 
+                
+                // Khóa nút sau khi validate thành công
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+
+                const method = EDIT_EVENT_ID ? 'PUT' : 'POST';
+                const endpoint = EDIT_EVENT_ID 
+                    ? `${API_BASE_URL}/admin/events/${EDIT_EVENT_ID}`
+                    : `${API_BASE_URL}/admin/events`;
+
+                const response = await fetch(endpoint, {
+                    method: method,
+                    headers: { 
+                        'Authorization': `Bearer ${ADMIN_TOKEN}`, 
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify(eventData)
+                });
+
+                if (response.ok) {
+                    const action = EDIT_EVENT_ID ? 'Cập nhật' : 'Tạo mới';
+                    showToast('success', `${action} thành công!`);
+                    setTimeout(() => {
+                        window.location.href = 'events.html'; 
+                    }, 1000);
+                } else {
+                    const errText = await response.text(); 
+                    let errorMessage = "Lỗi không xác định.";
+                    try {
+                        const errJson = JSON.parse(errText);
+                        if (errJson.message) errorMessage = errJson.message;
+                        else if (errJson.errors) errorMessage = Object.values(errJson.errors).flat().join('\n');
+                    } catch(e) { errorMessage = errText; } 
+                    
+                    Swal.fire({ icon: 'error', title: 'Không thể lưu!', text: errorMessage });
+                }
+            } catch (error) {
+                // Hiển thị lỗi logic (VD: Tổng vé > Sức chứa)
+                Swal.fire('Lỗi dữ liệu', error.message, 'warning');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.innerHTML = EDIT_EVENT_ID ? "Cập Nhật Thay Đổi" : "Lưu Sự Kiện";
+            }
+        }
+        
+        function collectFormData() {
+            const name = document.getElementById('name').value.trim();
+            const location = document.getElementById('location').value.trim();
+            const totalSlotsVal = parseInt(document.getElementById('totalSlots').value);
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const description = document.getElementById('description').value;
+            const status = document.getElementById('status').value;
+
+            if (!name || !location || !startDate || !endDate || isNaN(totalSlotsVal)) throw new Error("Vui lòng điền đủ thông tin *.");
+            if (new Date(startDate) >= new Date(endDate)) throw new Error("Ngày Bắt Đầu phải nhỏ hơn Ngày Kết Thúc.");
+
+            // GOM VÉ VÀ TÍNH TỔNG
+            let totalTicketQty = 0;
+            const tickets = [];
+            const ticketRows = document.querySelectorAll('.ticket-row');
+            
+            if (ticketRows.length === 0) throw new Error("Vui lòng thêm ít nhất một loại vé.");
+
+            ticketRows.forEach(row => {
+                const tName = row.querySelector('.t-name').value.trim();
+                const tPrice = parseFloat(row.querySelector('.t-price').value);
+                const tQty = parseInt(row.querySelector('.t-qty').value);
+
+                if (!tName) throw new Error("Tên vé không được để trống.");
+                if (isNaN(tPrice) || tPrice < 0) throw new Error(`Giá vé "${tName}" không hợp lệ.`);
+                if (isNaN(tQty) || tQty < 1) throw new Error(`Số lượng vé "${tName}" phải lớn hơn 0.`);
+
+                totalTicketQty += tQty;
+                tickets.push({ typeName: tName, price: tPrice, quantity: tQty });
+            });
+
+            // [QUAN TRỌNG] Kiểm tra Logic: Tổng vé > Sức chứa?
+            if (totalTicketQty > totalSlotsVal) {
+                throw new Error(`Tổng số lượng vé (${totalTicketQty}) KHÔNG ĐƯỢC lớn hơn Tổng sức chứa (${totalSlotsVal}).`);
+            }
+
+            return {
+                name: name,
+                description: description,
+                startDate: startDate,
+                endDate: endDate,
+                location: location,
+                totalSlots: totalSlotsVal,
+                status: status,
+                tickets: tickets // Luôn gửi vé
+            };
+        }
+    </script>
+</body>
+</html>
